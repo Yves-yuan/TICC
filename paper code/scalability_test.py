@@ -74,12 +74,12 @@ def updateClusters(LLE_node_vals,switch_penalty = 1):
 	future_cost_vals = np.zeros(LLE_node_vals.shape)
 
 	##compute future costs
-	for i in xrange(T-2,-1,-1):
+	for i in range(T-2,-1,-1):
 		j = i+1
 		indicator = np.zeros(num_clusters)
 		future_costs = future_cost_vals[j,:]
 		lle_vals = LLE_node_vals[j,:]
-		for cluster in xrange(num_clusters):
+		for cluster in range(num_clusters):
 			total_vals = future_costs + lle_vals + switch_penalty
 			total_vals[cluster] -= switch_penalty
 			future_cost_vals[i,cluster] = np.min(total_vals)
@@ -92,7 +92,7 @@ def updateClusters(LLE_node_vals,switch_penalty = 1):
 	path[0] = curr_location
 	DP_start2 = time.time()
 	##compute the path
-	for i in xrange(T-1):
+	for i in range(T-1):
 		j = i+1
 		future_costs = future_cost_vals[j,:]
 		lle_vals = LLE_node_vals[j,:]
@@ -110,10 +110,10 @@ def find_matching(confusion_matrix):
 	"""
 	_,n = confusion_matrix.shape
 	path = []
-	for i in xrange(n):
+	for i in range(n):
 		max_val = -1e10
 		max_ind = -1
-		for j in xrange(n):
+		for j in range(n):
 			if j in path:
 				pass
 			else:
@@ -129,7 +129,7 @@ def computeF1Score_delete(num_cluster,matching_algo,actual_clusters,threshold_al
 	computes the F1 scores and returns a list of values
 	"""
 	F1_score = np.zeros(num_cluster)
-	for cluster in xrange(num_cluster):
+	for cluster in range(num_cluster):
 		matched_cluster = matching_algo[cluster]
 		true_matrix = actual_clusters[cluster]
 		estimated_matrix = threshold_algo[matched_cluster]
@@ -137,8 +137,8 @@ def computeF1Score_delete(num_cluster,matching_algo,actual_clusters,threshold_al
 		TN = 0
 		FP = 0
 		FN = 0
-		for i in xrange(num_stacked*n):
-			for j in xrange(num_stacked*n):
+		for i in range(num_stacked*n):
+			for j in range(num_stacked*n):
 				if estimated_matrix[i,j] == 1 and true_matrix[i,j] != 0:
 					TP += 1.0
 				elif estimated_matrix[i,j] == 0 and true_matrix[i,j] == 0:
@@ -161,7 +161,7 @@ def compute_confusion_matrix(num_clusters,clustered_points_algo, sorted_indices_
 	"""
 	seg_len = 50
 	true_confusion_matrix = np.zeros([num_clusters,num_clusters])
-	for point in xrange(len(clustered_points_algo)):
+	for point in range(len(clustered_points_algo)):
 		cluster = clustered_points_algo[point]
 
 		#CASE E : ABCABC
@@ -178,12 +178,12 @@ def computeF1_macro(confusion_matrix,matching, num_clusters):
 	"""
 	##Permute the matrix columns
 	permuted_confusion_matrix = np.zeros([num_clusters,num_clusters])
-	for cluster in xrange(num_clusters):
+	for cluster in range(num_clusters):
 		matched_cluster = matching[cluster]
  		permuted_confusion_matrix[:,cluster] = confusion_matrix[:,matched_cluster]
  	##Compute the F1 score for every cluster
  	F1_score = 0
- 	for cluster in xrange(num_clusters):
+ 	for cluster in range(num_clusters):
  		TP = permuted_confusion_matrix[cluster,cluster]
  		FP = np.sum(permuted_confusion_matrix[:,cluster]) - TP
  		FN = np.sum(permuted_confusion_matrix[cluster,:]) - TP
@@ -224,7 +224,7 @@ computed_covariance = {}
 cluster_mean_info = {}
 cluster_mean_stacked_info = {}
 old_clustered_points = np.zeros(10)
-for iters in xrange(maxIters):
+for iters in range(maxIters):
 	print "\n\n\nITERATION ###", iters
 	iter_start =  time.time()
 	num_clusters = maxClusters - 1
@@ -254,9 +254,9 @@ for iters in xrange(maxIters):
 		time_stack_start = time.time()
 		complete_Data = np.zeros([m - num_stacked + 1, num_stacked*n])
 		len_data = m
-		for i in xrange(m - num_stacked + 1):
+		for i in range(m - num_stacked + 1):
 			idx = i
-			for k in xrange(num_stacked):
+			for k in range(num_stacked):
 				if i+k < len_data:
 					idx_k = i + k
 					complete_Data[i][k*n:(k+1)*n] =  Data[idx_k][0:n]
@@ -264,9 +264,9 @@ for iters in xrange(maxIters):
 		##Stack the training data
 		complete_D_train = np.zeros([len(training_idx), num_stacked*n])
 		len_training = len(training_idx)
-		for i in xrange(len(sorted_training_idx)):
+		for i in range(len(sorted_training_idx)):
 			idx = sorted_training_idx[i]
-			for k in xrange(num_stacked):
+			for k in range(num_stacked):
 				if i+k < len_training:
 					idx_k = sorted_training_idx[i+k]
 					complete_D_train[i][k*n:(k+1)*n] =  Data[idx_k][0:n]
@@ -312,7 +312,7 @@ for iters in xrange(maxIters):
 
 	##train_clusters holds the indices in complete_D_train 
 	##for each of the clusters
-	for cluster in xrange(num_clusters):
+	for cluster in range(num_clusters):
 		if len_train_clusters[cluster] != 0:
 			indices = train_clusters[cluster]
 
@@ -361,14 +361,14 @@ for iters in xrange(maxIters):
 
 	##Computing the norms
 	if iters != 0:
-		for cluster in xrange(num_clusters):
+		for cluster in range(num_clusters):
 			cluster_norms[cluster] = (np.linalg.norm(old_computed_covariance[num_clusters,cluster]),cluster)
 		sorted_cluster_norms = sorted(cluster_norms,reverse = True)
 
 	##Add a point to the empty clusters 
 	##Assumption more non empty clusters than empty ones
 	counter = 0
-	for cluster in xrange(num_clusters):
+	for cluster in range(num_clusters):
 		if len_train_clusters[cluster] == 0:
 			print "doing robustness stuff one cluster has zero points"
 			robust_start = time.time()
@@ -398,7 +398,7 @@ for iters in xrange(maxIters):
 	cache_start = time.time()
 	inv_matrix_cluster ={}
 	log_det_cov_cluster = {}
-	for cluster in xrange(num_clusters):
+	for cluster in range(num_clusters):
 		cov_matrix = computed_covariance[num_clusters,cluster][0:(num_blocks-1)*n,0:(num_blocks-1)*n]
 		log_det_cov = np.log(np.linalg.det(cov_matrix))# log(det(sigma2|1))
 		inv_matrix_cluster[cluster] = np.linalg.inv(cov_matrix)
@@ -409,10 +409,10 @@ for iters in xrange(maxIters):
 	LLE_start =  time.time()
 
 	LLE_all_points_clusters = np.zeros([len(clustered_points),num_clusters])
-	for point in xrange(len(clustered_points)):
+	for point in range(len(clustered_points)):
 		# print "Point #", point
 		if point + num_stacked-1 < complete_D_train.shape[0]:
-			for cluster in xrange(num_clusters):
+			for cluster in range(num_clusters):
 				# print "\nCLuster#", cluster
 				cluster_mean = cluster_mean_info[num_clusters,cluster] 
 				cluster_mean_stacked = cluster_mean_stacked_info[num_clusters,cluster] 
